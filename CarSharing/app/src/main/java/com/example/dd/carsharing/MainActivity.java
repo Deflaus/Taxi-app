@@ -43,14 +43,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Answerss = (RadioGroup)findViewById(R.id.Answers);
+        Answerss = findViewById(R.id.Answers);
 
-        answer1 = (RadioButton)findViewById(R.id.Answer1);
-        answer2 = (RadioButton)findViewById(R.id.Answer2);
-        answer3 = (RadioButton)findViewById(R.id.Answer3);
-        answer4 = (RadioButton)findViewById(R.id.Answer4);
+        answer1 = findViewById(R.id.Answer1);
+        answer2 = findViewById(R.id.Answer2);
+        answer3 = findViewById(R.id.Answer3);
+        answer4 = findViewById(R.id.Answer4);
 
-        Questionn = (TextView)findViewById(R.id.Question);
+        Questionn = findViewById(R.id.Question);
 
         Answerss.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -125,10 +125,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void getItems() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbwytTCLG9ITpUb8gZ2gP3V9zZPh371vvnooZakX4VO_F2uGbYD-/exec",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbxkCqxYKRLGXKEFWIxmQvWjO3rezW3GZDEwulR8ULSI5RAf3ds/exec",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Questionn.setText(response);
                         parseItems(response);
                     }
                 },
@@ -151,16 +152,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void parseItems(String jsonResposnce) {
+    private void parseItems(String jsonResposnce){
 
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
-        try {
-            JSONObject jobj = new JSONObject(jsonResposnce);
-            JSONArray jarray = jobj.getJSONArray("items");
 
+         try{
+             JSONObject jobj = new JSONObject(jsonResposnce);
+             JSONArray jarray = jobj.getJSONArray("items");
 
-            for (int i = 0; i < jarray.length(); i++) {
+             for (int i = 0; i < jarray.length(); i++) {
 
                 JSONObject jo = jarray.getJSONObject(i);
 
@@ -177,9 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 item.put("Answer4", answer_4);
 
                 list.add(item);
-
-
-            }
+             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -193,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         }
         String[] arr = sum.toString().split("<#>");
 
-        Questionn.setText(arr[2]);
+        //Questionn.setText(arr[1]);
     }
 
 }
