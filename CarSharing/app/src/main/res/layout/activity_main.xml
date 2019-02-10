@@ -21,7 +21,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/Question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -29,45 +29,59 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="31dp"
-        android:text="Введите свое имя"
-        android:textColor="@android:color/black"
+        android:layout_marginBottom="32dp"
+        android:text="Вопрос-хуес"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/et_item_name"
-        android:layout_width="0dp"
-        android:layout_height="46dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="200dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout2" />
 
-    <Button
-        android:id="@+id/button"
+    <RadioGroup
+        android:id="@+id/Answers"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="124dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="31dp"
-        android:layout_weight="1"
-        android:onClick="onClickButton"
-        android:text="ОК"
+        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_item_name" />
+        app:layout_constraintTop_toTopOf="@+id/linearLayout2">
+
+        <RadioButton
+            android:id="@+id/Answer1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ответ-хует 1"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/Answer2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ответ-хует 2"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/Answer3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ответ-хует 3"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/Answer4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ответ-хует 4"
+            android:textSize="20sp" />
+
+    </RadioGroup>
 
 
 </android.support.constraint.ConstraintLayout>
