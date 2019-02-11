@@ -1,11 +1,8 @@
 package com.example.dd.carsharing;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.support.v4.util.Pools;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -19,13 +16,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
     RadioButton answer4;
 
     TextView Questionn;
+
+    ArrayList<String> arrr = new ArrayList<>();
+
+    Random random = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,29 +55,39 @@ public class MainActivity extends AppCompatActivity {
 
         Questionn = findViewById(R.id.Question);
 
+        try {
+            parserXMLQuestion();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        randomQuestion();
+
         Answerss.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch(checkedId){
                     case R.id.Answer1:
-                        Questionn.setTextColor(Color.RED);
                         addItemToSheet();
-                        getItems();
+                        randomQuestion();
+                        answer1.setTextColor(Color.GREEN);
                         break;
                     case R.id.Answer2:
-                        Questionn.setTextColor(Color.GREEN);
                         addItemToSheet();
-                        getItems();
+                        randomQuestion();
+                        answer2.setTextColor(Color.RED);
                         break;
                     case R.id.Answer3:
-                        Questionn.setTextColor(Color.BLUE);
                         addItemToSheet();
-                        getItems();
+                        randomQuestion();
+                        answer3.setTextColor(Color.RED);
                         break;
                     case R.id.Answer4:
-                        Questionn.setTextColor(Color.YELLOW);
                         addItemToSheet();
-                        getItems();
+                        randomQuestion();
+                        answer4.setTextColor(Color.RED);
                         break;
 
                 }
@@ -103,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> parmas = new HashMap<>();
 
-                //here we pass params
                 parmas.put("action","addItem");
                 parmas.put("answer",answer);
 
@@ -111,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        int socketTimeOut = 50000;// u can change this .. here it is 50 seconds
+        int socketTimeOut = 50000;
 
         RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(retryPolicy);
@@ -123,76 +135,46 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getItems() {
+    public void parserXMLQuestion() throws XmlPullParserException, IOException {
+        XmlPullParser parser = getResources().getXml(R.xml.questions);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbxkCqxYKRLGXKEFWIxmQvWjO3rezW3GZDEwulR8ULSI5RAf3ds/exec",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Questionn.setText(response);
-                        parseItems(response);
-                    }
-                },
+        ArrayList<String> list = new ArrayList<>();
 
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-        );
-
-        int socketTimeOut = 50000;
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-        stringRequest.setRetryPolicy(policy);
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(stringRequest);
-
-    }
-
-    private void parseItems(String jsonResposnce){
-
-        ArrayList<HashMap<String, String>> list = new ArrayList<>();
-
-
-         try{
-             JSONObject jobj = new JSONObject(jsonResposnce);
-             JSONArray jarray = jobj.getJSONArray("items");
-
-             for (int i = 0; i < jarray.length(); i++) {
-
-                JSONObject jo = jarray.getJSONObject(i);
-
-                String answer_1 = jo.getString("Answer1");
-                String answer_2 = jo.getString("Answer2");
-                String answer_3 = jo.getString("Answer3");
-                String answer_4 = jo.getString("Answer4");
-
-
-                HashMap<String, String> item = new HashMap<>();
-                item.put("Answer1", answer_1);
-                item.put("Answer2", answer_2);
-                item.put("Answer3", answer_3);
-                item.put("Answer4", answer_4);
-
-                list.add(item);
-             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        StringBuilder sum = new StringBuilder();
-        for (HashMap<String, String> hash : list) {
-            for (String current : hash.values()) {
-                sum.append(current).append("<#>");
-
+        while (parser.getEventType()!= XmlPullParser.END_DOCUMENT) {
+            if (parser.getEventType() == XmlPullParser.START_TAG
+                    && parser.getName().equals("question")) {
+                list.add(parser.getAttributeValue(4) + "<#>"
+                        + parser.getAttributeValue(0) + "<#>"
+                        + parser.getAttributeValue(1) + "<#>"
+                        + parser.getAttributeValue(2) + "<#>"
+                        + parser.getAttributeValue(3));
             }
+            parser.next();
         }
-        String[] arr = sum.toString().split("<#>");
 
-        //Questionn.setText(arr[1]);
+
+
+        for (int i = 0, a = 0; i < list.size()*5; i += 5, a++){
+            String[] arr = list.get(a).split("<#>");
+            arrr.add(arr[0]);
+            arrr.add(arr[1]);
+            arrr.add(arr[2]);
+            arrr.add(arr[3]);
+            arrr.add(arr[4]);
+        }
     }
 
+    public void randomQuestion() {
+
+        int a = 1;
+        while ((a % 5)!= 0) {
+            a = random.nextInt(16);
+        }
+
+        Questionn.setText(arrr.get(a));
+        answer1.setText(arrr.get(a+1));
+        answer2.setText(arrr.get(a+2));
+        answer3.setText(arrr.get(a+3));
+        answer4.setText(arrr.get(a+4));
+    }
 }

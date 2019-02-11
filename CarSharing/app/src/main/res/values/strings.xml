@@ -2,4 +2,6 @@
     <string name="app_name">CarSharing</string>
     <string name="title_activity_question">QuestionActivity</string>
     <string name="title_activity_poll">Poll</string>
+    <string name="Question1">Question 1</string>
+
 </resources>
