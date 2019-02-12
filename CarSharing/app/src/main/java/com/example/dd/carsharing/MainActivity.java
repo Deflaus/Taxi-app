@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +45,14 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Integer> arABuf = new ArrayList<>();
 
     int countQuestion = 1;
+
+    boolean isAnswer1Right = false;
+    boolean isAnswer2Right = false;
+    boolean isAnswer3Right = false;
+    boolean isAnswer4Right = false;
+
+    Timer timer;
+    TimerTask mTimerTask;
 
     Random random = new Random();
 
@@ -72,32 +83,60 @@ public class MainActivity extends AppCompatActivity {
         Answerss.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch(checkedId){
-                    case R.id.Answer1:
-                        addItemToSheet();
-                        countQuestion++;
-                        randomQuestion();
-                        answer1.setTextColor(Color.GREEN);
-                        break;
-                    case R.id.Answer2:
-                        addItemToSheet();
-                        countQuestion++;
-                        randomQuestion();
-                        answer2.setTextColor(Color.RED);
-                        break;
-                    case R.id.Answer3:
-                        addItemToSheet();
-                        countQuestion++;
-                        randomQuestion();
-                        answer3.setTextColor(Color.RED);
-                        break;
-                    case R.id.Answer4:
-                        addItemToSheet();
-                        countQuestion++;
-                        randomQuestion();
-                        answer4.setTextColor(Color.RED);
-                        break;
+                if (countQuestion <= 4) {
+                    switch (checkedId) {
+                        case R.id.Answer1:
+                            addItemToSheet();
 
+                            countQuestion++;
+
+                            chooseRightAnswer();
+
+                            try {
+                                Thread.sleep(1000); //Приостанавливает поток на 1 секунду
+                            } catch (Exception e) {
+
+                            }
+
+                            answer1.setTextColor(Color.BLACK);
+                            answer2.setTextColor(Color.BLACK);
+                            answer3.setTextColor(Color.BLACK);
+                            answer4.setTextColor(Color.BLACK);
+
+                            randomQuestion();
+                            break;
+
+                        case R.id.Answer2:
+                            addItemToSheet();
+
+                            countQuestion++;
+
+                            chooseRightAnswer();
+
+                            randomQuestion();
+                            break;
+
+                        case R.id.Answer3:
+                            addItemToSheet();
+
+                            countQuestion++;
+
+                            chooseRightAnswer();
+
+                            randomQuestion();
+                            break;
+
+                        case R.id.Answer4:
+                            addItemToSheet();
+
+                            countQuestion++;
+
+                            chooseRightAnswer();
+
+                            randomQuestion();
+                            break;
+
+                    }
                 }
             }
         });
@@ -189,24 +228,28 @@ public class MainActivity extends AppCompatActivity {
         int ABuf;
 
         ABuf = random.nextInt(4) + 1;
+        if (ABuf == 1) isAnswer1Right = true;
         arABuf.add(ABuf);
         answer1.setText(arrr.get(Buf + ABuf));
 
         while (isCheckA(ABuf))  {
             ABuf = random.nextInt(4) + 1;
         }
+        if (ABuf == 2) isAnswer2Right = true;
         arABuf.add(ABuf);
         answer2.setText(arrr.get(Buf + ABuf));
 
         while (isCheckA(ABuf))  {
             ABuf = random.nextInt(4) + 1;
         }
+        if (ABuf == 3) isAnswer3Right = true;
         arABuf.add(ABuf);
         answer3.setText(arrr.get(Buf + ABuf));
 
         while (isCheckA(ABuf))  {
             ABuf = random.nextInt(4) + 1;
         }
+        if (ABuf == 4) isAnswer4Right = true;
         answer4.setText(arrr.get(Buf + ABuf));
 
         arABuf.clear();
@@ -224,5 +267,50 @@ public class MainActivity extends AppCompatActivity {
             if (arABuf.get(i) == ABuf) return true;
         }
         return false;
+    }
+
+    private void Timer(){
+        timer = new Timer();
+        mTimerTask = new MyTimerTask();
+
+        timer.schedule(mTimerTask, 5000);
+    }
+
+    class MyTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            answer1.setTextColor(Color.BLACK);
+            answer2.setTextColor(Color.BLACK);
+            answer3.setTextColor(Color.BLACK);
+            answer4.setTextColor(Color.BLACK);
+        }
+    }
+
+    private void chooseRightAnswer(){
+        if (isAnswer1Right) {
+            answer1.setTextColor(Color.GREEN);
+            answer2.setTextColor(Color.RED);
+            answer3.setTextColor(Color.RED);
+            answer4.setTextColor(Color.RED);
+            isAnswer1Right = false;
+        }else if(isAnswer2Right){
+            answer1.setTextColor(Color.RED);
+            answer2.setTextColor(Color.GREEN);
+            answer3.setTextColor(Color.RED);
+            answer4.setTextColor(Color.RED);
+            isAnswer1Right = false;
+        }else if (isAnswer3Right){
+            answer1.setTextColor(Color.RED);
+            answer2.setTextColor(Color.RED);
+            answer3.setTextColor(Color.GREEN);
+            answer4.setTextColor(Color.RED);
+            isAnswer1Right = false;
+        }else if (isAnswer4Right){
+            answer1.setTextColor(Color.RED);
+            answer2.setTextColor(Color.RED);
+            answer3.setTextColor(Color.RED);
+            answer4.setTextColor(Color.GREEN);
+            isAnswer1Right = false;
+        }
     }
 }
