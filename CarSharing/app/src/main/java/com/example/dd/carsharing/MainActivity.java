@@ -269,23 +269,6 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private void Timer(){
-        timer = new Timer();
-        mTimerTask = new MyTimerTask();
-
-        timer.schedule(mTimerTask, 5000);
-    }
-
-    class MyTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            answer1.setTextColor(Color.BLACK);
-            answer2.setTextColor(Color.BLACK);
-            answer3.setTextColor(Color.BLACK);
-            answer4.setTextColor(Color.BLACK);
-        }
-    }
-
     private void chooseRightAnswer(){
         if (isAnswer1Right) {
             answer1.setTextColor(Color.GREEN);
