@@ -38,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
     TextView Questionn;
 
     ArrayList<String> arrr = new ArrayList<>();
+    ArrayList<Integer> arQBuf = new ArrayList<>();
+    ArrayList<Integer> arABuf = new ArrayList<>();
+
+    int countQuestion = 1;
 
     Random random = new Random();
 
@@ -71,21 +75,25 @@ public class MainActivity extends AppCompatActivity {
                 switch(checkedId){
                     case R.id.Answer1:
                         addItemToSheet();
+                        countQuestion++;
                         randomQuestion();
                         answer1.setTextColor(Color.GREEN);
                         break;
                     case R.id.Answer2:
                         addItemToSheet();
+                        countQuestion++;
                         randomQuestion();
                         answer2.setTextColor(Color.RED);
                         break;
                     case R.id.Answer3:
                         addItemToSheet();
+                        countQuestion++;
                         randomQuestion();
                         answer3.setTextColor(Color.RED);
                         break;
                     case R.id.Answer4:
                         addItemToSheet();
+                        countQuestion++;
                         randomQuestion();
                         answer4.setTextColor(Color.RED);
                         break;
@@ -164,17 +172,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void randomQuestion() {
-
-        int a = 1;
-        while ((a % 5)!= 0) {
-            a = random.nextInt(16);
+    private void randomQuestion() {
+        int Buf = 1;
+        while ((Buf % 5)!= 0)  {
+            Buf = random.nextInt(16);
+            if (isCheckQ(Buf)) Buf = 1;
         }
 
-        Questionn.setText(arrr.get(a));
-        answer1.setText(arrr.get(a+1));
-        answer2.setText(arrr.get(a+2));
-        answer3.setText(arrr.get(a+3));
-        answer4.setText(arrr.get(a+4));
+        arQBuf.add(Buf);
+
+        Questionn.setText(arrr.get(Buf));
+        randomAnswers(Buf);
+    }
+
+    private void randomAnswers(int Buf){
+        int ABuf;
+
+        ABuf = random.nextInt(4) + 1;
+        arABuf.add(ABuf);
+        answer1.setText(arrr.get(Buf + ABuf));
+
+        while (isCheckA(ABuf))  {
+            ABuf = random.nextInt(4) + 1;
+        }
+        arABuf.add(ABuf);
+        answer2.setText(arrr.get(Buf + ABuf));
+
+        while (isCheckA(ABuf))  {
+            ABuf = random.nextInt(4) + 1;
+        }
+        arABuf.add(ABuf);
+        answer3.setText(arrr.get(Buf + ABuf));
+
+        while (isCheckA(ABuf))  {
+            ABuf = random.nextInt(4) + 1;
+        }
+        answer4.setText(arrr.get(Buf + ABuf));
+
+        arABuf.clear();
+    }
+
+    private boolean isCheckQ(int QBuf){
+        for(int i = 0; i < arQBuf.size(); i++) {
+            if (arQBuf.get(i) == QBuf) return true;
+        }
+        return false;
+    }
+
+    private boolean isCheckA(int ABuf){
+        for(int i = 0; i < arABuf.size(); i++) {
+            if (arABuf.get(i) == ABuf) return true;
+        }
+        return false;
     }
 }
