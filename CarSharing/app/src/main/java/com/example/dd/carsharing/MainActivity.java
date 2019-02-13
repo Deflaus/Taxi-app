@@ -26,7 +26,9 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
@@ -44,13 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
     TextView Questionn;
 
-    ArrayList<String> arrr = new ArrayList<>();
     ArrayList<String> arOfQueAndAnsInGet = new ArrayList<>();
     ArrayList<Integer> arQBuf = new ArrayList<>();
-    ArrayList<Integer> arIndexOfQue = new ArrayList<>();
     ArrayList<Integer> arABuf = new ArrayList<>();
-
-
 
     int countQuestion = 1;
 
@@ -76,19 +74,11 @@ public class MainActivity extends AppCompatActivity {
         Questionn = findViewById(R.id.Question);
 
         getItems();
-        //vvodIndexOfQue();
-
-        /*try {
-            Questionn.setText(arOfQueAndAnsInGet.get(0));
-        } catch (Exception e){
-            Questionn.setText(e.toString());
-        }*/
-        //randomQuestion();
 
         Answerss.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (countQuestion <= 2) {
+                if (countQuestion <= 4) {
                     switch (checkedId) {
                         case R.id.Answer1:
 
@@ -209,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        int socketTimeOut = 5000;
+        int socketTimeOut = 50000;
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 
         stringRequest.setRetryPolicy(policy);
@@ -219,14 +209,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void parseItems(String jsonResposnce) {
+    public void parseItems(String jsonResposnce) {
 
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
         try {
             JSONObject jobj = new JSONObject(jsonResposnce);
             JSONArray jarray = jobj.getJSONArray("items");
-
 
             for (int i = 0; i < jarray.length(); i++) {
 
@@ -254,35 +243,26 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        sortQuestion(list);
+    }
+
+    public void sortQuestion(ArrayList<HashMap<String, String>> listochek){
         StringBuilder sum = new StringBuilder();
-        for (HashMap<String, String> hash : list) {
+        for (HashMap<String, String> hash : listochek) {
             for (String current : hash.values()) {
                 sum.append(current).append("<#>");
 
             }
         }
         String[] arr = sum.toString().split("<#>");
-        for (int i = 0; i < arr.length; i++) arOfQueAndAnsInGet.add(arr[i]);
-        try {
-            Questionn.setText(arr.length);
-        } catch (Exception e){
-            Questionn.setText(e.toString());
-        }
-
-    }
-
-
-
-    private void vvodIndexOfQue(){
-        for (int i = 2; i < (arOfQueAndAnsInGet.size()/5); i += 5) arIndexOfQue.add(i);
+        arOfQueAndAnsInGet.addAll(Arrays.asList(arr));
     }
 
     private void randomQuestion() {
-        int Buf = 1;
-        while (isCheckInIndexOfQue(Buf))  {
+        int Buf;
+        do{
             Buf = random.nextInt(16);
-            if (isCheckQ(Buf)) Buf = 1;
-        }
+        } while (isCheckQ(Buf) && isCheckInIndexOfQue(Buf));
 
         arQBuf.add(Buf);
 
@@ -292,39 +272,51 @@ public class MainActivity extends AppCompatActivity {
 
     private void randomAnswers(int Buf){
         int ABuf;
+        do {
+            ABuf = rnd(-2, 2);
+        } while ( ABuf != 0);
 
-        ABuf = random.nextInt(4) + 1;
         if (ABuf == 1) isAnswer1Right = true;
-        arABuf.add(ABuf);
-        answer1.setText(arrr.get(Buf + ABuf));
 
-        while (isCheckA(ABuf))  {
-            ABuf = random.nextInt(4) + 1;
-        }
-        if (ABuf == 2) isAnswer2Right = true;
         arABuf.add(ABuf);
-        answer2.setText(arrr.get(Buf + ABuf));
+        answer1.setText(arOfQueAndAnsInGet.get(Buf + ABuf));
 
-        while (isCheckA(ABuf))  {
-            ABuf = random.nextInt(4) + 1;
-        }
-        if (ABuf == 3) isAnswer3Right = true;
+        do{
+            ABuf = rnd(-2, 2);
+        } while (isCheckA(ABuf) && (ABuf != 0));
+
+        if (ABuf == 1) isAnswer2Right = true;
+
         arABuf.add(ABuf);
-        answer3.setText(arrr.get(Buf + ABuf));
+        answer2.setText(arOfQueAndAnsInGet.get(Buf + ABuf));
 
-        while (isCheckA(ABuf))  {
-            ABuf = random.nextInt(4) + 1;
-        }
-        if (ABuf == 4) isAnswer4Right = true;
-        answer4.setText(arrr.get(Buf + ABuf));
+        do{
+            ABuf = rnd(-2, 2);
+        } while (isCheckA(ABuf) && (ABuf != 0));
+
+        if (ABuf == 1) isAnswer3Right = true;
+
+        arABuf.add(ABuf);
+        answer3.setText(arOfQueAndAnsInGet.get(Buf + ABuf));
+
+        do{
+            ABuf = rnd(-2, 2);
+        } while (isCheckA(ABuf) && (ABuf != 0));
+
+        if (ABuf == 1) isAnswer4Right = true;
+
+        answer4.setText(arOfQueAndAnsInGet.get(Buf + ABuf));
 
         arABuf.clear();
     }
 
+    public static int rnd(int min, int max){
+        max -= min;
+        return (int) (Math.random() * ++max) + min;
+    }
+
     private boolean isCheckQ(int QBuf){
-        for(int i = 0; i < arQBuf.size(); i++) {
-            if (arQBuf.get(i) == QBuf) return true;
-        }
+        for(int i = 0; i < arQBuf.size(); i++) if (arQBuf.get(i) == QBuf) return true;
         return false;
     }
 
@@ -336,10 +328,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isCheckInIndexOfQue(int Index){
-        for (int i = 0; i < arIndexOfQue.size(); i++){
-            if (Index == arIndexOfQue.get(i)) return true;
-        }
-        return false;
+        for (int i = 2; i < arOfQueAndAnsInGet.size()/5; i+=5) if (Index == i) return false;
+        return true;
     }
 
     private void chooseRightAnswer(){
