@@ -3,7 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="colorFON">#9572ff</color>
-    <color name="colorNormal">#92ffc1</color>
-    <color name="colorActived">#52a4d4</color>
+    <color name="colorFON">#e1ffff</color>
+    <color name="colorNormal">#000a56</color>
+    <color name="colorActived">#00c100</color>
 </resources>
