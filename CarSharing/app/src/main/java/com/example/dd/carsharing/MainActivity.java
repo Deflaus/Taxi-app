@@ -94,11 +94,6 @@ public class MainActivity extends AppCompatActivity {
 
                             }*/
 
-                            /*answer1.setTextColor(Color.BLACK);
-                            answer2.setTextColor(Color.BLACK);
-                            answer3.setTextColor(Color.BLACK);
-                            answer4.setTextColor(Color.BLACK);*/
-
                             randomQuestion();
 
                             break;
@@ -358,5 +353,13 @@ public class MainActivity extends AppCompatActivity {
             answer4.setTextColor(Color.GREEN);
             isAnswer1Right = false;
         }
+    }
+
+    private void clearAnswers(){
+        Answerss.clearCheck();
+        answer1.setTextColor(Color.BLACK);
+        answer2.setTextColor(Color.BLACK);
+        answer3.setTextColor(Color.BLACK);
+        answer4.setTextColor(Color.BLACK);
     }
 }
