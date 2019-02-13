@@ -1,6 +1,7 @@
 package com.example.dd.carsharing;
 
 import android.graphics.Color;
+import android.media.session.MediaSession;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.RadioButton;
@@ -17,6 +18,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -41,8 +45,12 @@ public class MainActivity extends AppCompatActivity {
     TextView Questionn;
 
     ArrayList<String> arrr = new ArrayList<>();
+    ArrayList<String> arOfQueAndAnsInGet = new ArrayList<>();
     ArrayList<Integer> arQBuf = new ArrayList<>();
+    ArrayList<Integer> arIndexOfQue = new ArrayList<>();
     ArrayList<Integer> arABuf = new ArrayList<>();
+
+
 
     int countQuestion = 1;
 
@@ -50,9 +58,6 @@ public class MainActivity extends AppCompatActivity {
     boolean isAnswer2Right = false;
     boolean isAnswer3Right = false;
     boolean isAnswer4Right = false;
-
-    Timer timer;
-    TimerTask mTimerTask;
 
     Random random = new Random();
 
@@ -70,40 +75,42 @@ public class MainActivity extends AppCompatActivity {
 
         Questionn = findViewById(R.id.Question);
 
-        try {
-            parserXMLQuestion();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        getItems();
+        //vvodIndexOfQue();
 
-        randomQuestion();
+        /*try {
+            Questionn.setText(arOfQueAndAnsInGet.get(0));
+        } catch (Exception e){
+            Questionn.setText(e.toString());
+        }*/
+        //randomQuestion();
 
         Answerss.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (countQuestion <= 4) {
+                if (countQuestion <= 2) {
                     switch (checkedId) {
                         case R.id.Answer1:
+
                             addItemToSheet();
 
                             countQuestion++;
 
                             chooseRightAnswer();
 
-                            try {
+                            /*try {
                                 Thread.sleep(1000); //Приостанавливает поток на 1 секунду
                             } catch (Exception e) {
 
-                            }
+                            }*/
 
-                            answer1.setTextColor(Color.BLACK);
+                            /*answer1.setTextColor(Color.BLACK);
                             answer2.setTextColor(Color.BLACK);
                             answer3.setTextColor(Color.BLACK);
-                            answer4.setTextColor(Color.BLACK);
+                            answer4.setTextColor(Color.BLACK);*/
 
                             randomQuestion();
+
                             break;
 
                         case R.id.Answer2:
@@ -141,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void addItemToSheet(){
         final String answer = Questionn.getText().toString().trim();
@@ -182,45 +191,102 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void parserXMLQuestion() throws XmlPullParserException, IOException {
-        XmlPullParser parser = getResources().getXml(R.xml.questions);
+    private void getItems() {
 
-        ArrayList<String> list = new ArrayList<>();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbzBqkNr--4sNYa-dT-IsKGMDbeiA293Rjo5BJKVxSP3gyxxqjc/exec?action=getItems",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        parseItems(response);
+                    }
+                },
 
-        while (parser.getEventType()!= XmlPullParser.END_DOCUMENT) {
-            if (parser.getEventType() == XmlPullParser.START_TAG
-                    && parser.getName().equals("question")) {
-                list.add(parser.getAttributeValue(4) + "<#>"
-                        + parser.getAttributeValue(0) + "<#>"
-                        + parser.getAttributeValue(1) + "<#>"
-                        + parser.getAttributeValue(2) + "<#>"
-                        + parser.getAttributeValue(3));
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+
+        int socketTimeOut = 5000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(stringRequest);
+
+    }
+
+    private void parseItems(String jsonResposnce) {
+
+        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+
+        try {
+            JSONObject jobj = new JSONObject(jsonResposnce);
+            JSONArray jarray = jobj.getJSONArray("items");
+
+
+            for (int i = 0; i < jarray.length(); i++) {
+
+                JSONObject jo = jarray.getJSONObject(i);
+
+                String question = jo.getString("Question");
+                String answer_1 = jo.getString("Answer1");
+                String answer_2 = jo.getString("Answer2");
+                String answer_3 = jo.getString("Answer3");
+                String answer_4 = jo.getString("Answer4");
+
+
+                HashMap<String, String> item = new HashMap<>();
+                item.put("Question", question);
+                item.put("Answer1", answer_1);
+                item.put("Answer2", answer_2);
+                item.put("Answer3", answer_3);
+                item.put("Answer4", answer_4);
+
+                list.add(item);
+
+
             }
-            parser.next();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
+        StringBuilder sum = new StringBuilder();
+        for (HashMap<String, String> hash : list) {
+            for (String current : hash.values()) {
+                sum.append(current).append("<#>");
 
-
-        for (int i = 0, a = 0; i < list.size()*5; i += 5, a++){
-            String[] arr = list.get(a).split("<#>");
-            arrr.add(arr[0]);
-            arrr.add(arr[1]);
-            arrr.add(arr[2]);
-            arrr.add(arr[3]);
-            arrr.add(arr[4]);
+            }
         }
+        String[] arr = sum.toString().split("<#>");
+        for (int i = 0; i < arr.length; i++) arOfQueAndAnsInGet.add(arr[i]);
+        try {
+            Questionn.setText(arr.length);
+        } catch (Exception e){
+            Questionn.setText(e.toString());
+        }
+
+    }
+
+
+
+    private void vvodIndexOfQue(){
+        for (int i = 2; i < (arOfQueAndAnsInGet.size()/5); i += 5) arIndexOfQue.add(i);
     }
 
     private void randomQuestion() {
         int Buf = 1;
-        while ((Buf % 5)!= 0)  {
+        while (isCheckInIndexOfQue(Buf))  {
             Buf = random.nextInt(16);
             if (isCheckQ(Buf)) Buf = 1;
         }
 
         arQBuf.add(Buf);
 
-        Questionn.setText(arrr.get(Buf));
+        Questionn.setText(arOfQueAndAnsInGet.get(Buf));
         randomAnswers(Buf);
     }
 
@@ -265,6 +331,13 @@ public class MainActivity extends AppCompatActivity {
     private boolean isCheckA(int ABuf){
         for(int i = 0; i < arABuf.size(); i++) {
             if (arABuf.get(i) == ABuf) return true;
+        }
+        return false;
+    }
+
+    private boolean isCheckInIndexOfQue(int Index){
+        for (int i = 0; i < arIndexOfQue.size(); i++){
+            if (Index == arIndexOfQue.get(i)) return true;
         }
         return false;
     }
