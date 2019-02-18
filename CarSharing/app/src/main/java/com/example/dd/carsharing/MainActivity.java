@@ -37,15 +37,12 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
-    /*RadioGroup Answerss;
+    RadioGroup Answerss;
 
     RadioButton answer1;
     RadioButton answer2;
     RadioButton answer3;
     RadioButton answer4;
-
-
-    public int Buf;
 
     TextView Questionn;
 
@@ -60,127 +57,14 @@ public class MainActivity extends AppCompatActivity {
     boolean isAnswer3Right = false;
     boolean isAnswer4Right = false;
 
-    Random random = new Random();*/
+    Random random = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
-
-    public MainActivity()  {
-        getItems();
-       // WorkSpace.randomQuestion();
-        WorkSpace.CaseWithAnswers();
-
-    }
-    public void addItemToSheet(){
-        final String answer = WorkSpace.Questionn.getText().toString().trim();
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbxSc4KPVqHtI9rkqXEkui8syGdxYMNM9GS1tvi9Dgy1N7JEb3AO/exec",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> parmas = new HashMap<>();
-
-                parmas.put("action","addItem");
-                parmas.put("answer",answer);
-
-                return parmas;
-            }
-        };
-
-        int socketTimeOut = 50000;
-
-        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(retryPolicy);
-
-        RequestQueue queue = new RequestQueue(this);
-
-        queue.add(stringRequest);
-
-
-    }
-
-    public  void getItems() {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbzBqkNr--4sNYa-dT-IsKGMDbeiA293Rjo5BJKVxSP3gyxxqjc/exec?action=getItems",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        parseItems(response);
-                    }
-                },
-
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-        );
-
-        int socketTimeOut = 50000;
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-        stringRequest.setRetryPolicy(policy);
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(stringRequest);
-
-    }
-    public static void parseItems(String jsonResposnce) {
-
-        ArrayList<HashMap<String, String>> list = new ArrayList<>();
-
-        try {
-            JSONObject jobj = new JSONObject(jsonResposnce);
-            JSONArray jarray = jobj.getJSONArray("items");
-
-            for (int i = 0; i < jarray.length(); i++) {
-
-                JSONObject jo = jarray.getJSONObject(i);
-
-                String question = jo.getString("Question");
-                String answer_1 = jo.getString("Answer1");
-                String answer_2 = jo.getString("Answer2");
-                String answer_3 = jo.getString("Answer3");
-                String answer_4 = jo.getString("Answer4");
-
-
-                HashMap<String, String> item = new HashMap<>();
-                item.put("Question", question);
-                item.put("Answer1", answer_1);
-                item.put("Answer2", answer_2);
-                item.put("Answer3", answer_3);
-                item.put("Answer4", answer_4);
-
-                list.add(item);
-
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        GoogleTabs.sortQuestion(list);
-    }
-
-
-  /*      Answerss = findViewById(R.id.Answers);
+        Answerss = findViewById(R.id.Answers);
 
         answer1 = findViewById(R.id.Answer1);
         answer2 = findViewById(R.id.Answer2);
@@ -190,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
         Questionn = findViewById(R.id.Question);
 
         getItems();
-        //randomQuestion();
-       // randomAnswers(Buf);
 
         Answerss.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -206,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
 
                             chooseRightAnswer();
 
+                            /*try {
+                                Thread.sleep(1000); //Приостанавливает поток на 1 секунду
+                            } catch (Exception e) {
+
+                            }*/
 
                             randomQuestion();
 
@@ -245,11 +132,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }   */
+    }
 
 
 
-  /*  private void addItemToSheet(){
+    private void addItemToSheet(){
         final String answer = Questionn.getText().toString().trim();
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbxSc4KPVqHtI9rkqXEkui8syGdxYMNM9GS1tvi9Dgy1N7JEb3AO/exec",
@@ -367,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void randomQuestion() {
-        //int Buf;
+        int Buf;
         do{
             Buf = random.nextInt(16);
         } while (isCheckQ(Buf) && isCheckInIndexOfQue(Buf));
@@ -474,6 +361,5 @@ public class MainActivity extends AppCompatActivity {
         answer2.setTextColor(Color.BLACK);
         answer3.setTextColor(Color.BLACK);
         answer4.setTextColor(Color.BLACK);
-    }    */
-
+    }
 }
